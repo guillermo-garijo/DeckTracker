@@ -1,10 +1,13 @@
 public class Main {
     public static void main(String[] args) {
-        UI uiManager = new UI();
-        GameManager gameManager = new GameManager();
-        gameManager.addObserver(uiManager);
+        Player local = new Player();
+        Player enemy = new Player();
+        LocalUI uiManager = new LocalUI();
+        local.addObserver(uiManager);
+        GameState gameState = new GameState(enemy, local);
+        GameController gameController = new GameController(gameState);
         uiManager.start();
-        gameManager.initTracker();
-        gameManager.start();
+        gameController.initTracker();
+        gameController.start();
     }
 }

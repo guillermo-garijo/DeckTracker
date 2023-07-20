@@ -1,19 +1,18 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
 
-public class UI implements Observer {
-    private JPanel display;
+public class EnemyUI implements Observer {
     private JTable deckData;
+    private JPanel display;
+
     private static final Vector<String> columns = new Vector<>(Arrays.asList("Name", "Copies"));
     private DefaultTableModel model;
 
-    public UI() {
+    public EnemyUI() {
 
     }
 
