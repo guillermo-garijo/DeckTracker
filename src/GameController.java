@@ -11,8 +11,8 @@ import java.util.concurrent.TimeUnit;
 public class GameController {
 
     GameState gameState;
-    ArrayList<Rectangle> previousBoardState;
-    ArrayList<Rectangle> currentBoardState;
+    BoardState previousBoardState;
+    BoardState currentBoardState;
     HashMap<String, String> cardNames;
 
     public GameController(GameState gameState){
@@ -29,6 +29,10 @@ public class GameController {
                     inGame=true;
                 }
             }
+            this.currentBoardState=parseBoardState(API.makeRequest("positional-rectangles"));
+            this.previousBoardState=parseBoardState(API.makeRequest("positional-rectangles"));
+            currentBoardState.printBoard();
+
         } catch (IOException e) {
             //game closed
             throw new RuntimeException(e);
@@ -37,11 +41,26 @@ public class GameController {
     public void updateState(){
         try {
             String s = API.makeRequest("positional-rectangles");
-            this.currentBoardState=convertToRectangles(s);
-            printBoard(currentBoardState);
-            /*if(previousBoardState==null){
+            currentBoardState=parseBoardState(s);
+            if(currentBoardState.hasOthers()){
+                currentBoardState=previousBoardState;
+                return;
+            }
+            if(currentBoardState.equalBoardStates(previousBoardState)){
+                return;
+            }
 
-            }*/
+            if(currentBoardState.checkDraw(previousBoardState)){
+
+            }
+            if(currentBoardState.checkInvoke(previousBoardState)){
+
+            }
+            if(currentBoardState.checkCreate(previousBoardState)){
+
+            }
+
+
             //do stuff
 
             //mirar si en bench hay algo con nab
@@ -49,7 +68,13 @@ public class GameController {
             //mirar si en bench hay algo con invocar
             //mirar si en mano ya no hay hechizo con invocar
             //mirar si en field hay algo con invoca al atacar
-            //
+            //mirar si en mano hay nuevas cartas (robadas, no devueltas,)
+
+            System.out.println(s);
+            previousBoardState=currentBoardState;
+            currentBoardState.printBoard();
+
+
         } catch (IOException e) {
             //gameclosed
             throw new RuntimeException(e);
@@ -71,23 +96,33 @@ public class GameController {
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
         executor.scheduleAtFixedRate(helloRunnable, 0, 1, TimeUnit.SECONDS);
     }
-    private ArrayList<Rectangle> convertToRectangles(String data){
-        ArrayList<Rectangle> rectangles = new ArrayList<>();
-        JsonObject jsonDeckCode =  JsonParser.parseString(data).getAsJsonObject();
+    private BoardState parseBoardState(String data) {
+        BoardState boardState = new BoardState(cardNames);
+
+        JsonObject jsonDeckCode = JsonParser.parseString(data).getAsJsonObject();
         JsonArray jsonRect = jsonDeckCode.get("Rectangles").getAsJsonArray();
-        for (JsonElement element: jsonRect) {
+        for (JsonElement element : jsonRect) {
             Rectangle rectangle = new Gson().fromJson(element, Rectangle.class);
-            rectangles.add(rectangle);
-        }
-        return rectangles;
-    }
-    private void printBoard(ArrayList<Rectangle> b){
-        for (Rectangle r:b) {
-            if(r.isLocal()){
-                System.out.println("Name: " + cardNames.get(r.getCardCode()) + ", X: " + r.getTopLeftX() + ", Y: " + r.getTopLeftY());
+            if (!rectangle.isFace()) {
+                if (rectangle.isLocalBench()) {
+                    boardState.addToLocalBench(rectangle);
+                } else if (rectangle.isLocalField()) {
+                    boardState.addToLocalField(rectangle);
+                } else if (rectangle.isEnemyField()) {
+                    boardState.addToEnemyField(rectangle);
+                } else if (rectangle.isEnemyBench()) {
+                    boardState.addToEnemyBench(rectangle);
+                } else if (rectangle.isSpellStack()) {
+                    boardState.addToSpellStack(rectangle);
+                } else if (rectangle.isLocalHand()) {
+                    boardState.addToLocalHand(rectangle);
+                } else {
+                    boardState.addToOthers(rectangle);
+                }
             }
+
         }
-        System.out.println(" ... ");
+        return boardState;
     }
     private void loadCardNames() throws FileNotFoundException {
         File directoryPath = new File("assets");
@@ -109,5 +144,4 @@ public class GameController {
             }
         }
     }
-
 }

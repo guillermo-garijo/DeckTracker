@@ -1,0 +1,21 @@
+Funcionalidades (partidas normales, no expedicion):
+    - Mostrar deck actual (done)
+    - Actualizar mi deck durante la partida
+        - Saber si he robado una carta (restar)
+        - Saber si alguna carta a invocado alguna carta del mazo (restar)
+        - Saber si he añadido cartas al mazo (restar)
+        - Saber si me han robado carta del mazo, descontarla cuando la jueguen (quizas no se puede) (restar)
+        - Saber si he añadido cartas al mazo (sumar)
+    - Mostrar el deck enemigo
+    - Ir creando el deck enemigo
+    - Mostrar mi cementerio
+    - Ir actualizando mi cementerio
+        - Saber que unidades han muerto
+        - Saber que hechizos he usado
+        - Saber que hitos se han roto
+        - Saber que equipamientos se han roto
+    - Mostrar el cementerio enemigo
+    - Ir actualizando el cementerio enemigo
+
+Opciones:
+    - Todo lo nuevo, si hay algo igual en el mazo se ha robado de ahi, todo lo que desaparezca se va al cementerio

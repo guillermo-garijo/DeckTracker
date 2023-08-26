@@ -2,10 +2,12 @@ public class Card {
     private String cardCode;
     private String name;
     private Integer copies;
+    private boolean active;
 
     public Card(String cardCode, Integer copies){
         this.cardCode = cardCode;
         this.copies = copies;
+        this.active = true;
     }
 
     private Card(String cardCode, Integer copies, String name){
