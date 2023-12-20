@@ -1,3 +1,5 @@
+package business;
+
 public class Rectangle {
 
     private int CardID;
